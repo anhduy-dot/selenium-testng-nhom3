@@ -1,0 +1,102 @@
+# Lab 08 - Bài 4: quy trình CI/CD đầy đủ hơn do AI Agent đề xuất, nhóm chỉnh lại
+#   push/PR vào main  -> smoke (chặn sớm) -> regression Chrome + Firefox -> tổng hợp report -> thông báo
+#   chạy định kỳ 01:00 UTC (08:00 giờ VN) mỗi ngày để phát hiện trang web demo thay đổi
+name: Selenium CI/CD pipeline (Lab 08 - Bai 4)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 1 * * *'
+  workflow_dispatch:
+
+env:
+  RETRY: 1                      # chạy lại 1 lần test fail để giảm flaky (RetryAnalyzer)
+
+jobs:
+  smoke:
+    name: 1. Smoke test (Chrome)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with: { distribution: temurin, java-version: '17', cache: maven }
+      - name: Chay smoke
+        run: ./mvnw -B -ntp test -Dheadless=true -Dsuite=suites/lab06-smoke.xml -Dretry=${{ env.RETRY }}
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with: { name: report-smoke, path: target/surefire-reports/testng-results.xml }
+
+  regression:
+    name: 2. Regression (${{ matrix.browser }})
+    needs: smoke                # smoke fail thì không tốn thời gian chạy regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [ chrome, firefox ]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v6
+        with: { distribution: temurin, java-version: '17', cache: maven }
+      - name: Chay toan bo testng.xml
+        run: ./mvnw -B -ntp test -Dheadless=true -Dbrowser=${{ matrix.browser }} -Dretry=${{ env.RETRY }}
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: report-regression-${{ matrix.browser }}
+          path: |
+            target/surefire-reports/
+            target/extent-report/
+
+  report:
+    name: 3. Tong hop ket qua
+    needs: [ smoke, regression ]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v8
+        with: { path: reports }
+      - name: Ghi bang ket qua vao Job Summary
+        run: |
+          echo "## Ket qua kiem thu - lan chay #${{ github.run_number }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Bo test | Tong | Pass | Fail | Skip |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|---|---|---|---|---|" >> "$GITHUB_STEP_SUMMARY"
+          for f in $(find reports -name testng-results.xml | sort); do
+            name=$(echo "$f" | cut -d/ -f2)
+            line=$(grep -m1 -o '<testng-results[^>]*>' "$f")
+            get() { echo "$line" | grep -o "$1=\"[0-9]*\"" | grep -o '[0-9]*'; }
+            echo "| $name | $(get total) | $(get passed) | $(get failed) | $(get skipped) |" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Smoke: **${{ needs.smoke.result }}** - Regression: **${{ needs.regression.result }}**" >> "$GITHUB_STEP_SUMMARY"
+
+  notify-success:
+    name: 4a. Thong bao PASS
+    needs: [ regression ]
+    if: success()
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "::notice title=PASS::Tat ca test Chrome + Firefox deu pass - commit ${{ github.sha }} san sang merge/deploy"
+
+  notify-failure:
+    name: 4b. Thong bao FAIL
+    needs: [ smoke, regression ]
+    if: failure()
+    runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+    steps:
+      - name: Bao loi tren tab Actions
+        run: |
+          echo "::error title=FAIL::Pipeline loi o commit ${{ github.sha }} cua ${{ github.actor }}. Xem log: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      - name: Gui tin nhan Discord (chi chay khi da cau hinh secret DISCORD_WEBHOOK)
+        if: env.DISCORD_WEBHOOK != ''
+        run: |
+          curl -s -H "Content-Type: application/json" \
+            -d "{\"content\":\"Selenium CI loi o ${{ github.repository }} - ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            "$DISCORD_WEBHOOK"
