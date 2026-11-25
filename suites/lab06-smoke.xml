@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Lab 06 - Bai 3: chi chay cac test thuoc group smoke -->
+<suite name="Lab06-Smoke" verbose="1">
+    <test name="Smoke">
+        <groups><run><include name="smoke"/></run></groups>
+        <classes>
+            <class name="poly.nhom3.lab06.LoginTest"/>
+            <class name="poly.nhom3.lab06.ProductTest"/>
+            <class name="poly.nhom3.lab06.CartTest"/>
+        </classes>
+    </test>
+</suite>

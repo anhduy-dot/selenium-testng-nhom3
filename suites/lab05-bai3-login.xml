@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Lab 05 - Bai 3: suite chay chuc nang login bang TestNG -->
+<suite name="Lab05-Bai3-Login" verbose="1">
+    <test name="Login saucedemo + the-internet" preserve-order="true">
+        <classes>
+            <class name="poly.nhom3.lab05.LoginTestNG"/>
+            <class name="poly.nhom3.lab05.LoginLogoutTestNG"/>
+        </classes>
+    </test>
+</suite>

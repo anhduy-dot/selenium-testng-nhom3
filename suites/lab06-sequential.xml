@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Lab 06 - Bai 3: chay TUAN TU toan bo 11 test (do thoi gian de so sanh) -->
+<suite name="Lab06-Sequential" verbose="1">
+    <test name="Tuan tu">
+        <groups><run><include name="regression"/></run></groups>
+        <classes>
+            <class name="poly.nhom3.lab06.LoginTest"/>
+            <class name="poly.nhom3.lab06.ProductTest"/>
+            <class name="poly.nhom3.lab06.CartTest"/>
+        </classes>
+    </test>
+</suite>

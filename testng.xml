@@ -1,0 +1,30 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Suite day du (mac dinh cua ./mvnw test va GitHub Actions): toan bo test on dinh cua Lab 05 - Lab 07 -->
+<suite name="Nhom03-Full-Regression" verbose="1">
+    <test name="Lab05 - Locator, XPath, TestNG, Cross-browser" preserve-order="true">
+        <classes>
+            <class name="poly.nhom3.lab05.LocatorPracticeTest"/>
+            <class name="poly.nhom3.lab05.XPathCssTest"/>
+            <class name="poly.nhom3.lab05.LoginTestNG"/>
+            <class name="poly.nhom3.lab05.LoginLogoutTestNG"/>
+            <class name="poly.nhom3.lab05.CrossBrowserLoginTest"/>
+        </classes>
+    </test>
+    <test name="Lab06 - Data-driven, Groups">
+        <classes>
+            <class name="poly.nhom3.lab06.LoginDataDrivenTest"/>
+            <class name="poly.nhom3.lab06.LoginCsvDataTest"/>
+            <class name="poly.nhom3.lab06.LoginTest"/>
+            <class name="poly.nhom3.lab06.ProductTest"/>
+            <class name="poly.nhom3.lab06.CartTest"/>
+        </classes>
+    </test>
+    <test name="Lab07 - Debug, Exception, Page Object" preserve-order="true">
+        <classes>
+            <class name="poly.nhom3.lab07.DebugLoginTest"/>
+            <class name="poly.nhom3.lab07.ExceptionHandlingTest"/>
+            <class name="poly.nhom3.lab07.CheckoutFlowTest"/>
+            <class name="poly.nhom3.lab07.ComplexPurchaseFlowTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Lab 06 - Bai 1 + Bai 2: data-driven bang @DataProvider va bang file CSV -->
+<suite name="Lab06-DataDriven" verbose="1">
+    <test name="DataProvider hard-code">
+        <classes><class name="poly.nhom3.lab06.LoginDataDrivenTest"/></classes>
+    </test>
+    <test name="DataProvider doc file CSV">
+        <classes><class name="poly.nhom3.lab06.LoginCsvDataTest"/></classes>
+    </test>
+</suite>

@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Lab 06 - Bai 3: SONG SONG theo class - moi class chay tren 1 luong, method trong class van tuan tu -->
+<suite name="Lab06-Parallel-Classes" parallel="classes" thread-count="3" verbose="1">
+    <test name="Song song theo classes">
+        <groups><run><include name="regression"/></run></groups>
+        <classes>
+            <class name="poly.nhom3.lab06.LoginTest"/>
+            <class name="poly.nhom3.lab06.ProductTest"/>
+            <class name="poly.nhom3.lab06.CartTest"/>
+        </classes>
+    </test>
+</suite>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>poly.nhom3</groupId>
+    <artifactId>selenium-testng</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+    <name>selenium-testng</name>
+    <description>Lab 05-08 - Kiem thu nang cao cung AI (SOF3091) - Selenium + TestNG + CI/CD - Nhom 03</description>
+
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <selenium.version>4.54.0</selenium.version>
+        <testng.version>7.12.0</testng.version>
+        <commons-csv.version>1.14.1</commons-csv.version>
+        <extentreports.version>5.1.2</extentreports.version>
+        <!-- File suite mac dinh; doi bang: ./mvnw test -Dsuite=suites/lab06-smoke.xml -->
+        <suite>testng.xml</suite>
+    </properties>
+
+    <dependencies>
+        <!-- Selenium 4: da co san Selenium Manager tu tai driver (va ca trinh duyet Firefox neu may chua co) -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.version}</version>
+        </dependency>
+
+        <!-- TestNG thay cho JUnit tu Lab 05 -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Lab 06 Bai 2: doc du lieu test tu file CSV -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>${commons-csv.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Lab 06 Bai 4: Extent Report -->
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>${extentreports.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Tat canh bao "No SLF4J providers" -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.20</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.16.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <!-- Giu 3.5.x: tu 3.6.0 surefire chay TestNG qua JUnit Platform va KHONG doc duoc file testng.xml nua -->
+                <version>3.5.6</version>
+                <configuration>
+                    <!-- Chay theo file testng.xml (bi bo qua khi truyen -Dtest=TenClass) -->
+                    <suiteXmlFiles>
+                        <suiteXmlFile>${suite}</suiteXmlFile>
+                    </suiteXmlFiles>
+                    <properties>
+                        <!-- Giu report mac dinh cua TestNG: index.html, emailable-report.html -->
+                        <property>
+                            <name>usedefaultlisteners</name>
+                            <value>true</value>
+                        </property>
+                    </properties>
+                    <trimStackTrace>false</trimStackTrace>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

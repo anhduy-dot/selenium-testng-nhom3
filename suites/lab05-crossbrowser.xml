@@ -1,0 +1,16 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Lab 05 - Bai 4: cung mot test login chay lan luot tren Chrome va Firefox (them parallel="tests" thread-count="2" de chay cung luc) -->
+<suite name="Lab05-Bai4-CrossBrowser" verbose="1">
+    <test name="Login tren Chrome">
+        <parameter name="browser" value="chrome"/>
+        <classes>
+            <class name="poly.nhom3.lab05.CrossBrowserLoginTest"/>
+        </classes>
+    </test>
+    <test name="Login tren Firefox">
+        <parameter name="browser" value="firefox"/>
+        <classes>
+            <class name="poly.nhom3.lab05.CrossBrowserLoginTest"/>
+        </classes>
+    </test>
+</suite>

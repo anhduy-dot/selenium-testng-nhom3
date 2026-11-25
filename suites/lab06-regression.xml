@@ -1,0 +1,15 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<!-- Lab 06 - Bai 3: chay group regression, rieng nhom login va product tach thanh 2 test -->
+<suite name="Lab06-Regression" verbose="1">
+    <test name="Regression - login">
+        <groups><run><include name="regression"/><include name="login"/></run></groups>
+        <classes><class name="poly.nhom3.lab06.LoginTest"/></classes>
+    </test>
+    <test name="Regression - product">
+        <groups><run><include name="product"/></run></groups>
+        <classes>
+            <class name="poly.nhom3.lab06.ProductTest"/>
+            <class name="poly.nhom3.lab06.CartTest"/>
+        </classes>
+    </test>
+</suite>

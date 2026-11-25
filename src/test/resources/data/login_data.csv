@@ -1,0 +1,10 @@
+# Lab 06 - Bai 2: du lieu login saucedemo (nhom tu tao). Dong bat dau bang # la ghi chu.
+ma,mo_ta,username,password,ket_qua_mong_doi
+CSV01,Login thành công,standard_user,secret_sauce,INVENTORY
+CSV02,Sai username,nguoi_dung_sai,secret_sauce,Epic sadface: Username and password do not match any user in this service
+CSV03,Sai password,standard_user,123456,Epic sadface: Username and password do not match any user in this service
+CSV04,Username rỗng,,secret_sauce,Epic sadface: Username is required
+CSV05,Password rỗng,standard_user,,Epic sadface: Password is required
+CSV06,Tài khoản bị khoá,locked_out_user,secret_sauce,"Epic sadface: Sorry, this user has been locked out."
+CSV07,User có lỗi giao diện vẫn đăng nhập được,problem_user,secret_sauce,INVENTORY
+CSV08,User chậm (performance_glitch_user),performance_glitch_user,secret_sauce,INVENTORY
