@@ -1,0 +1,54 @@
+# Lab 08 - Bài 2: GitHub Actions cơ bản cho dự án Maven + Selenium + TestNG
+# Bản đầu do AI sinh; nhóm tự sửa: đặt tên tiếng Việt rõ ràng, thêm workflow_dispatch,
+# thêm bước in thông tin môi trường, upload cả Extent Report và bước thông báo cuối.
+name: Selenium CI (Lab 08 - Bai 2)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:            # nhóm thêm: cho phép bấm "Run workflow" chạy tay
+
+jobs:
+  test:
+    name: Full regression - Chrome headless
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Lay code tu repository
+        uses: actions/checkout@v7
+
+      - name: Cai JDK 17 (Temurin) + cache Maven
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven            # cache ~/.m2 theo hash cua pom.xml
+
+      - name: Thong tin moi truong
+        run: |
+          java -version
+          google-chrome --version
+          ./mvnw -v
+
+      - name: Chay test bang Maven (testng.xml)
+        run: ./mvnw -B -ntp test -Dheadless=true
+
+      - name: Upload TestNG + Extent report
+        if: always()              # van upload khi test fail de con xem nguyen nhan
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports-chrome
+          path: |
+            target/surefire-reports/
+            target/extent-report/
+          retention-days: 14
+
+      - name: Thong bao ket qua
+        if: always()
+        run: |
+          echo "Workflow '${{ github.workflow }}' lan chay #${{ github.run_number }}"
+          echo "Commit ${{ github.sha }} do ${{ github.actor }} day len nhanh ${{ github.ref_name }}"
+          echo "Trang thai job: ${{ job.status }}"
