@@ -1,0 +1,71 @@
+# Lab 08 - Bài 3: chạy theo group (smoke / toàn bộ), đa trình duyệt bằng matrix, upload report, thông báo
+name: Selenium Matrix - group x trinh duyet (Lab 08 - Bai 3)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      test_group:
+        description: 'Nhom test can chay'
+        type: choice
+        options: [ smoke, all ]
+        default: smoke
+      browser:
+        description: 'Trinh duyet'
+        type: choice
+        options: [ both, chrome, firefox ]
+        default: both
+
+jobs:
+  test:
+    name: ${{ matrix.group }} - ${{ matrix.browser }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false          # 1 job fail khong huy cac job con lai
+      max-parallel: 4           # 4 job chay song song tren 4 may ao
+      matrix:
+        # push: chay du 2 x 2 = 4 job; chay tay: chi chay group/trinh duyet da chon
+        group: ${{ fromJSON(github.event_name == 'workflow_dispatch' && format('["{0}"]', inputs.test_group) || '["smoke","all"]') }}
+        browser: ${{ fromJSON(github.event_name == 'workflow_dispatch' && inputs.browser != 'both' && format('["{0}"]', inputs.browser) || '["chrome","firefox"]') }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Chon file suite theo group
+        id: suite
+        run: |
+          if [ "${{ matrix.group }}" = "smoke" ]; then
+            echo "file=suites/lab06-smoke.xml" >> "$GITHUB_OUTPUT"
+          else
+            echo "file=testng.xml" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Chay ${{ matrix.group }} tren ${{ matrix.browser }}
+        run: ./mvnw -B -ntp test -Dheadless=true -Dbrowser=${{ matrix.browser }} -Dsuite=${{ steps.suite.outputs.file }}
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: report-${{ matrix.group }}-${{ matrix.browser }}
+          path: |
+            target/surefire-reports/
+            target/extent-report/
+          retention-days: 14
+
+      - name: Thong bao
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "::notice title=PASS::Group ${{ matrix.group }} tren ${{ matrix.browser }} chay thanh cong"
+          else
+            echo "::error title=FAIL::Group ${{ matrix.group }} tren ${{ matrix.browser }} co test loi - tai artifact report-${{ matrix.group }}-${{ matrix.browser }} de xem"
+          fi
