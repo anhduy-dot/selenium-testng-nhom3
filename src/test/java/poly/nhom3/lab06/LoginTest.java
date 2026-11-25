@@ -23,7 +23,7 @@ public class LoginTest extends BaseTest {
     @Test(groups = {"smoke", "regression", "login"}, description = "Login hợp lệ vào trang Products")
     public void loginHopLe() {
         loginAs(this, "standard_user");
-        String title = waitFor().until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.title"))).getText();
+        String title = waitFor().until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.page-title"))).getText();
         Assert.assertEquals(title, "Products");
     }
 
